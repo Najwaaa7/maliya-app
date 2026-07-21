@@ -596,7 +596,7 @@ const Store = (() => {
   ];
 
   /* Initial sample data — everything here is user-editable in later phases. */
-  const seed = () => ({
+  const sampleSeed = () => ({
     meta: {
       schemaVersion: SCHEMA_VERSION,
       appVersion: APP_VERSION,
@@ -767,11 +767,39 @@ const Store = (() => {
     data.meta.appVersion = APP_VERSION;
     return data;
   };
-
+const emptySeed = () => migrate({
+  meta: {
+    schemaVersion: SCHEMA_VERSION,
+    appVersion: APP_VERSION,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  settings: {
+    lang: "ar",
+    theme: "system",
+    accent: "emerald",
+    currency: "SAR",
+    numerals: "latn",
+    dateFmt: "dmy",
+    salaryDay: 27,
+    monthStart: 1,
+    defaultAccountId: "",
+    monthlySalary: 0
+  },
+  accounts: [],
+  commitments: [],
+  children: [],
+  household: {
+    workers: []
+  },
+  categories: defaultCategories(),
+  transactions: [],
+  trips: []
+});
   const load = () => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (!raw) { state = seed(); persist(); return; }
+      if (!raw) { state = emptySeed(); persist(); return; }
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== "object" || !parsed.settings) throw new Error("bad");
       const oldVersion = parsed.meta && parsed.meta.schemaVersion;
@@ -780,7 +808,7 @@ const Store = (() => {
     } catch (e) {
       /* Corrupt storage: keep a rescue copy, then reseed. */
       try { localStorage.setItem(KEY + ".corrupt", localStorage.getItem(KEY) || ""); } catch (_) {}
-      state = seed(); persist();
+      state = emptySeed(); persist();
     }
   };
   const persist = () => {
