@@ -1,0 +1,7 @@
+# secrets & local config — commit config.example.js only
+js/config.js
+# system noise
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
